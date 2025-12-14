@@ -102,7 +102,7 @@ async function loginWithAccount(user, pass) {
 }
 
 return result;
-
+}
 
 async function main() {
   console.log(`🔍 发现 ${accountList.length} 个账号需要登录`);
