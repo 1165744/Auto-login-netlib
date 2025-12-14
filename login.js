@@ -80,27 +80,29 @@ async function loginWithAccount(user, pass) {
     await page.waitForTimeout(5000);
     
     // 检查登录是否成功
-    const pageContent = await page.content();
-    
-    if (pageContent.includes('exclusive owner') || pageContent.includes(user)) {
-      console.log(`✅ ${user} - 登录成功`);
-      result.success = true;
-      result.message = `✅ ${user} 登录成功`;
-    } else {
-      console.log(`❌ ${user} - 登录失败`);
-      result.message = `❌ ${user} 登录失败`;
-    }
-    
-  } catch (e) {
-    console.log(`❌ ${user} - 登录异常: ${e.message}`);
-    result.message = `❌ ${user} 登录异常: ${e.message}`;
-  } finally {
-    if (page) await page.close();
-    await browser.close();
+  const pageContent = await page.content();
+
+  if (pageContent.includes('Log out')) {
+    result.success = true;
+    result.message = `✅ ${user} 登录成功`;
+  } else if (pageContent.includes('Invalid credentials')) {
+    result.success = false;
+    result.message = `❌ ${user} 用户名或密码错误`;
+  } else {
+    result.success = false;
+    result.message = `❌ ${user} 登录失败`;
   }
-  
-  return result;
+
+} catch (e) {
+  result.success = false;
+  result.message = `❌ ${user} 登录异常: ${e.message}`;
+} finally {
+  if (page) await page.close();
+  await browser.close();
 }
+
+return result;
+
 
 async function main() {
   console.log(`🔍 发现 ${accountList.length} 个账号需要登录`);
